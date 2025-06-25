@@ -10,7 +10,7 @@ import {
   Modal,
 } from 'react-native';
 import { supabase, Database } from '@/lib/supabase';
-import { MapPin, Eye, DollarSign, Ruler, Calendar } from 'lucide-react-native';
+import { MapPin, Eye, DollarSign, Hash, Ruler, Calendar } from 'lucide-react-native';
 
 type LandRecord = Database['public']['Tables']['land_records']['Row'] & {
   profiles?: Database['public']['Tables']['profiles']['Row'];
@@ -36,7 +36,7 @@ export default function PublicLandsScreen() {
         .from('land_records')
         .select(`
           *,
-          profiles:owner_id (
+          user_profiles:owner_id (
             id,
             full_name
           )
@@ -121,8 +121,8 @@ export default function PublicLandsScreen() {
 
       {land.price && (
         <View style={styles.priceRow}>
-          <DollarSign size={18} color="#059669" />
-          <Text style={styles.price}>${land.price.toLocaleString()}</Text>
+          <Hash size={18} color="#059669" />
+          <Text style={styles.price}>₦{land.price.toLocaleString()}</Text>
         </View>
       )}
 
@@ -245,7 +245,7 @@ export default function PublicLandsScreen() {
                   <View style={styles.detailRow}>
                     <Text style={styles.detailLabel}>Price:</Text>
                     <Text style={[styles.detailValue, styles.priceValue]}>
-                      ${selectedLand.price.toLocaleString()}
+                      ₦{selectedLand.price.toLocaleString()}
                     </Text>
                   </View>
                 )}

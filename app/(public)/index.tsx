@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase, Database } from '@/lib/supabase';
-import { Search, MapPin, Filter, Eye, DollarSign, Ruler } from 'lucide-react-native';
+import { Search, MapPin, Filter, Eye, DollarSign, Hash, Ruler } from 'lucide-react-native';
 
 type LandRecord = Database['public']['Tables']['land_records']['Row'] & {
   profiles?: Database['public']['Tables']['profiles']['Row'];
@@ -50,7 +50,7 @@ export default function PublicSearchScreen() {
         .from('land_records')
         .select(`
           *,
-          profiles:owner_id (
+          user_profiles:owner_id (
             id,
             full_name,
             email
@@ -183,8 +183,8 @@ export default function PublicSearchScreen() {
         </View>
         {land.price && (
           <View style={styles.priceContainer}>
-            <DollarSign size={16} color="#059669" />
-            <Text style={styles.landPrice}>${land.price.toLocaleString()}</Text>
+            <Hash size={16} color="#059669" />
+            <Text style={styles.landPrice}>₦{land.price.toLocaleString()}</Text>
           </View>
         )}
       </View>
@@ -288,6 +288,7 @@ export default function PublicSearchScreen() {
               <TextInput
                 style={styles.rangeInput}
                 placeholder="Min Price"
+                placeholderTextColor='grey'
                 value={filters.minPrice}
                 onChangeText={(text) => setFilters({ ...filters, minPrice: text })}
                 keyboardType="numeric"
@@ -296,6 +297,7 @@ export default function PublicSearchScreen() {
               <TextInput
                 style={styles.rangeInput}
                 placeholder="Max Price"
+                placeholderTextColor='grey'
                 value={filters.maxPrice}
                 onChangeText={(text) => setFilters({ ...filters, maxPrice: text })}
                 keyboardType="numeric"
@@ -307,6 +309,7 @@ export default function PublicSearchScreen() {
               <TextInput
                 style={styles.rangeInput}
                 placeholder="Min Size"
+                placeholderTextColor='grey'
                 value={filters.minSize}
                 onChangeText={(text) => setFilters({ ...filters, minSize: text })}
                 keyboardType="numeric"
@@ -315,6 +318,7 @@ export default function PublicSearchScreen() {
               <TextInput
                 style={styles.rangeInput}
                 placeholder="Max Size"
+                placeholderTextColor='grey'
                 value={filters.maxSize}
                 onChangeText={(text) => setFilters({ ...filters, maxSize: text })}
                 keyboardType="numeric"
@@ -325,6 +329,7 @@ export default function PublicSearchScreen() {
             <TextInput
               style={styles.input}
               placeholder="Enter zoning type..."
+              placeholderTextColor='grey'
               value={filters.zoning}
               onChangeText={(text) => setFilters({ ...filters, zoning: text })}
             />
@@ -373,7 +378,7 @@ export default function PublicSearchScreen() {
               {selectedLand.price && (
                 <View style={styles.detailCard}>
                   <Text style={styles.detailLabel}>Price</Text>
-                  <Text style={styles.detailValue}>${selectedLand.price.toLocaleString()}</Text>
+                  <Text style={styles.detailValue}>₦{selectedLand.price.toLocaleString()}</Text>
                 </View>
               )}
 

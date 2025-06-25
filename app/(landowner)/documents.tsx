@@ -306,6 +306,7 @@ export default function LandownerDocumentsScreen() {
             <TextInput
               style={styles.input}
               placeholder="https://example.com/document.pdf"
+              placeholderTextColor='grey'
               value={formData.document_url}
               onChangeText={(text) => setFormData({ ...formData, document_url: text })}
               keyboardType="url"
@@ -315,6 +316,7 @@ export default function LandownerDocumentsScreen() {
             <TextInput
               style={[styles.input, styles.textArea]}
               placeholder="Any additional information about this document..."
+              placeholderTextColor='grey'
               value={formData.notes}
               onChangeText={(text) => setFormData({ ...formData, notes: text })}
               multiline

@@ -245,24 +245,28 @@ export default function LandownerDashboard() {
             <TextInput
               style={styles.input}
               placeholder="Land Title *"
+              placeholderTextColor="grey"
               value={formData.title}
               onChangeText={(text) => setFormData({ ...formData, title: text })}
             />
             <TextInput
               style={styles.input}
               placeholder="Location *"
+              placeholderTextColor="grey"
               value={formData.location}
               onChangeText={(text) => setFormData({ ...formData, location: text })}
             />
             <TextInput
               style={styles.input}
               placeholder="GPS Coordinates"
+              placeholderTextColor="grey"
               value={formData.coordinates}
               onChangeText={(text) => setFormData({ ...formData, coordinates: text })}
             />
             <TextInput
               style={styles.input}
               placeholder="Size *"
+              placeholderTextColor="grey"
               value={formData.size}
               onChangeText={(text) => setFormData({ ...formData, size: text })}
               keyboardType="numeric"
@@ -270,12 +274,14 @@ export default function LandownerDashboard() {
             <TextInput
               style={styles.input}
               placeholder="Zoning *"
+              placeholderTextColor="grey"
               value={formData.zoning}
               onChangeText={(text) => setFormData({ ...formData, zoning: text })}
             />
             <TextInput
               style={styles.input}
               placeholder="Estimated Price"
+              placeholderTextColor="grey"
               value={formData.price}
               onChangeText={(text) => setFormData({ ...formData, price: text })}
               keyboardType="numeric"
@@ -283,6 +289,7 @@ export default function LandownerDashboard() {
             <TextInput
               style={[styles.input, styles.textArea]}
               placeholder="Description"
+              placeholderTextColor="grey"
               value={formData.description}
               onChangeText={(text) => setFormData({ ...formData, description: text })}
               multiline

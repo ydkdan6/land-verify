@@ -121,6 +121,39 @@ export default function AdminLandsScreen() {
     }
   };
 
+  const handleDeleteLand = async (landId: string, landTitle: string) => {
+    Alert.alert(
+      'Delete Land Record',
+      `Are you sure you want to delete "${landTitle}"? This action cannot be undone.`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const { error } = await supabase
+                .from('land_records')
+                .delete()
+                .eq('id', landId);
+
+              if (error) throw error;
+
+              Alert.alert('Success', 'Land record deleted successfully');
+              fetchLands();
+            } catch (error: any) {
+              console.error('Error deleting land:', error);
+              Alert.alert('Error', error.message || 'Failed to delete land record');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -195,6 +228,13 @@ export default function AdminLandsScreen() {
         >
           <Edit size={16} color="white" />
           <Text style={styles.actionButtonText}>Edit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.actionButton, styles.deleteButton]}
+          onPress={() => handleDeleteLand(land.id, land.title)}
+        >
+          <Trash2 size={16} color="white" />
+          <Text style={styles.actionButtonText}>Delete</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -436,6 +476,7 @@ const styles = StyleSheet.create({
   landActions: {
     flexDirection: 'row',
     gap: 8,
+    flexWrap: 'wrap',
   },
   actionButton: {
     flexDirection: 'row',
@@ -453,6 +494,9 @@ const styles = StyleSheet.create({
   },
   editButton: {
     backgroundColor: '#2563EB',
+  },
+  deleteButton: {
+    backgroundColor: '#EF4444',
   },
   actionButtonText: {
     color: 'white',
