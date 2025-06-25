@@ -23,6 +23,7 @@ export default function LandownerDocumentsScreen() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [myLands, setMyLands] = useState<Database['public']['Tables']['land_records']['Row'][]>([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false); // Add submitting state
   const [showAddModal, setShowAddModal] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -80,31 +81,78 @@ export default function LandownerDocumentsScreen() {
   };
 
   const handleSubmitDocument = async () => {
-    if (!formData.land_record_id || !formData.document_url) {
-      Alert.alert('Error', 'Please select a land record and provide document URL');
+    // Enhanced validation
+    if (!profile?.id) {
+      Alert.alert('Error', 'User profile not found. Please log in again.');
       return;
     }
 
+    if (!formData.land_record_id) {
+      Alert.alert('Error', 'Please select a land record');
+      return;
+    }
+
+    if (!formData.document_url || !formData.document_url.trim()) {
+      Alert.alert('Error', 'Please provide a document URL');
+      return;
+    }
+
+    // Basic URL validation
     try {
-      const { error } = await supabase
+      new URL(formData.document_url.trim());
+    } catch {
+      Alert.alert('Error', 'Please provide a valid URL');
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      console.log('Submitting document with data:', {
+        land_record_id: formData.land_record_id,
+        document_type: formData.document_type,
+        document_url: formData.document_url.trim(),
+        submitted_by: profile.id,
+        notes: formData.notes.trim() || null,
+      });
+
+      const { data, error } = await supabase
         .from('ownership_documents')
         .insert({
           land_record_id: formData.land_record_id,
           document_type: formData.document_type,
-          document_url: formData.document_url,
-          submitted_by: profile?.id!,
-          notes: formData.notes || null,
-        });
+          document_url: formData.document_url.trim(),
+          submitted_by: profile.id,
+          notes: formData.notes.trim() || null,
+        })
+        .select(); // Add select to get the inserted data back
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
+      console.log('Document submitted successfully:', data);
       Alert.alert('Success', 'Document submitted for review');
       setShowAddModal(false);
       resetForm();
-      fetchDocuments();
+      await fetchDocuments(); // Refresh the documents list
     } catch (error: any) {
       console.error('Error submitting document:', error);
-      Alert.alert('Error', error.message || 'Failed to submit document');
+      
+      // More detailed error handling
+      let errorMessage = 'Failed to submit document';
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.details) {
+        errorMessage = error.details;
+      } else if (error.hint) {
+        errorMessage = error.hint;
+      }
+      
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -254,32 +302,45 @@ export default function LandownerDocumentsScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Submit Document</Text>
-            <TouchableOpacity onPress={() => setShowAddModal(false)}>
+            <TouchableOpacity 
+              onPress={() => {
+                setShowAddModal(false);
+                resetForm(); // Reset form when closing modal
+              }}
+            >
               <Text style={styles.cancelButton}>Cancel</Text>
             </TouchableOpacity>
           </View>
 
           <ScrollView style={styles.modalContent}>
             <Text style={styles.fieldLabel}>Select Land Record *</Text>
-            <View style={styles.pickerContainer}>
-              {myLands.map((land) => (
-                <TouchableOpacity
-                  key={land.id}
-                  style={[
-                    styles.landOption,
-                    formData.land_record_id === land.id && styles.landOptionSelected,
-                  ]}
-                  onPress={() => setFormData({ ...formData, land_record_id: land.id })}
-                >
-                  <Text style={[
-                    styles.landOptionText,
-                    formData.land_record_id === land.id && styles.landOptionTextSelected,
-                  ]}>
-                    {land.title} - {land.location}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            {myLands.length === 0 ? (
+              <View style={styles.noLandsContainer}>
+                <Text style={styles.noLandsText}>
+                  You don't have any registered land records. Please add a land record first.
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.pickerContainer}>
+                {myLands.map((land) => (
+                  <TouchableOpacity
+                    key={land.id}
+                    style={[
+                      styles.landOption,
+                      formData.land_record_id === land.id && styles.landOptionSelected,
+                    ]}
+                    onPress={() => setFormData({ ...formData, land_record_id: land.id })}
+                  >
+                    <Text style={[
+                      styles.landOptionText,
+                      formData.land_record_id === land.id && styles.landOptionTextSelected,
+                    ]}>
+                      {land.title} - {land.location}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
 
             <Text style={styles.fieldLabel}>Document Type *</Text>
             <View style={styles.typeContainer}>
@@ -310,6 +371,8 @@ export default function LandownerDocumentsScreen() {
               value={formData.document_url}
               onChangeText={(text) => setFormData({ ...formData, document_url: text })}
               keyboardType="url"
+              autoCapitalize="none"
+              autoCorrect={false}
             />
 
             <Text style={styles.fieldLabel}>Additional Notes</Text>
@@ -323,9 +386,18 @@ export default function LandownerDocumentsScreen() {
               numberOfLines={4}
             />
 
-            <TouchableOpacity style={styles.submitButton} onPress={handleSubmitDocument}>
+            <TouchableOpacity 
+              style={[
+                styles.submitButton, 
+                (submitting || myLands.length === 0) && styles.submitButtonDisabled
+              ]} 
+              onPress={handleSubmitDocument}
+              disabled={submitting || myLands.length === 0}
+            >
               <Upload size={20} color="white" />
-              <Text style={styles.submitButtonText}>Submit Document</Text>
+              <Text style={styles.submitButtonText}>
+                {submitting ? 'Submitting...' : 'Submit Document'}
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
@@ -562,6 +634,19 @@ const styles = StyleSheet.create({
     color: '#059669',
     fontWeight: '500',
   },
+  noLandsContainer: {
+    backgroundColor: '#FEF2F2',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: '#DC2626',
+  },
+  noLandsText: {
+    fontSize: 14,
+    color: '#DC2626',
+    textAlign: 'center',
+  },
   typeContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -611,6 +696,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginTop: 20,
     gap: 8,
+  },
+  submitButtonDisabled: {
+    backgroundColor: '#94A3B8',
   },
   submitButtonText: {
     color: 'white',
