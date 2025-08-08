@@ -160,9 +160,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 const debugSupabaseConnection = async () => {
   console.log('🔍 Debug: Checking Supabase configuration...');
   
-  // 1. Check configuration
-  console.log('🔍 Debug: Supabase URL:', supabase.supabaseUrl);
-  console.log('🔍 Debug: Supabase Key:', supabase.supabaseKey ? 'Present' : 'Missing');
+  // // 1. Check configuration
+  // console.log('🔍 Debug: Supabase URL:', supabase.supabaseUrl);
+  // console.log('🔍 Debug: Supabase Key:', supabase.supabaseKey ? 'Present' : 'Missing');
   
   // 2. Test basic connectivity
   try {
@@ -189,25 +189,25 @@ const debugSupabaseConnection = async () => {
   }
   
   // 4. Check network
-  try {
-    console.log('🔍 Debug: Testing direct fetch to Supabase...');
-    const response = await fetch(`${supabase.supabaseUrl}/rest/v1/`, {
-      headers: {
-        'apikey': supabase.supabaseKey,
-        'Authorization': `Bearer ${supabase.supabaseKey}`
-      }
-    });
-    console.log('🔍 Debug: Direct fetch result:', {
-      status: response.status,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries())
-    });
+  // try {
+  //   console.log('🔍 Debug: Testing direct fetch to Supabase...');
+  //   const response = await fetch(`${supabase.supabaseUrl}/rest/v1/`, {
+  //     headers: {
+  //       'apikey': supabase.supabaseKey,
+  //       'Authorization': `Bearer ${supabase.supabaseKey}`
+  //     }
+  //   });
+  //   console.log('🔍 Debug: Direct fetch result:', {
+  //     status: response.status,
+  //     statusText: response.statusText,
+  //     headers: Object.fromEntries(response.headers.entries())
+  //   });
     
-    const text = await response.text();
-    console.log('🔍 Debug: Response body preview:', text.substring(0, 200));
-  } catch (err) {
-    console.error('🔍 Debug: Direct fetch failed:', err);
-  }
+  //   const text = await response.text();
+  //   console.log('🔍 Debug: Response body preview:', text.substring(0, 200));
+  // } catch (err) {
+  //   console.error('🔍 Debug: Direct fetch failed:', err);
+  // }
 };
 
 // Modified signUp function with better error handling
