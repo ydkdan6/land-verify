@@ -62,7 +62,7 @@ export default function AuthScreen() {
         console.log('🔑 AuthScreen: Sign up completed');
       }
     } catch (error: any) {
-      console.error('🔑 AuthScreen: Auth error:', error);
+      // console.error('🔑 AuthScreen: Auth error:', error);
       Alert.alert('Error', error.message || 'An error occurred');
     } finally {
       setLoading(false);

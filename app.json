@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "LandInfo",
-    "slug": "LandInfo",
+    "slug": "bolt-expo-nativewind",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.jpeg",
@@ -24,14 +24,15 @@
     "experiments": {
       "typedRoutes": true
     },
+    "android": {
+      "package": "com.dannycodess.boltexponativewind"
+    },
+    "owner": "dannycodess",
     "extra": {
       "router": {},
       "eas": {
         "projectId": "87e51f58-56ac-4d00-952b-fdb689d5492c"
       }
-    },
-    "android": {
-      "package": "com.dannycodess.boltexponativewind"
     }
   }
 }

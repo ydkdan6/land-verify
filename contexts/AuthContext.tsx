@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase, Database } from '@/lib/supabase';
+import {
+  Alert,
+} from 'react-native';
 
 type Profile = Database['public']['Tables']['user_profiles']['Row'];
 
@@ -326,13 +329,13 @@ const signUp = async (email: string, password: string, fullName: string, role: P
       });
 
       if (error) {
-        console.error('🔑 signIn: Signin failed:', error);
+         Alert.alert('Error', 'Invalid email or password');
         throw error;
       }
       
       console.log('🔑 signIn: Signin successful');
     } catch (error) {
-      console.error('🔑 signIn: Unexpected error during signin:', error);
+      Alert.alert('Error', 'Invalid email or password');
       throw error;
     }
   };
